@@ -1,11 +1,8 @@
-package com.engcode.aprendendospring.infrastructure.entity;
+package com.EngCode.Cadastro_de_Usuario.infrastructure.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -18,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "usuario")
+@Builder
 
 
 public class Usuario implements UserDetails { //implementa UserDatails para validar o usuário de acesso de login e senha.
@@ -28,7 +26,7 @@ public class Usuario implements UserDetails { //implementa UserDatails para vali
     private long id;
     @Column(name = "nome" , length = 100)
     private String nome;
-    @Column (name = "e-mail", length = 100)
+    @Column (name = "email", length = 100)
     private String email;
     @Column (name = "senha")
     private String senha;

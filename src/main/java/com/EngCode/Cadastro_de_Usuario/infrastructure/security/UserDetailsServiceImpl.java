@@ -1,7 +1,8 @@
-package com.engcode.aprendendospring.infrastructure.security;
+package com.EngCode.Cadastro_de_Usuario.infrastructure.security;
 
-import com.engcode.aprendendospring.infrastructure.entity.Usuario;
-import com.engcode.aprendendospring.infrastructure.repository.UsuarioRepository;
+
+import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Usuario;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

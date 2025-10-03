@@ -1,4 +1,4 @@
-package com.engcode.aprendendospring.infrastructure.security;
+package com.EngCode.Cadastro_de_Usuario.infrastructure.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
