@@ -1,6 +1,7 @@
-package com.engcode.aprendendospring.infrastructure.repository;
+package com.EngCode.Cadastro_de_Usuario.infrastructure.repository;
 
-import com.engcode.aprendendospring.infrastructure.entity.Usuario;
+
+import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Transactional //Ajuda a não causar erro na hora de deletar
     void deleteByEmail (String email);
-
 
 }
