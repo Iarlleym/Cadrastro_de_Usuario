@@ -3,13 +3,14 @@ package com.EngCode.Cadastro_de_Usuario.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "telefone")
-@Builder
+
 
 public class Telefone {
 

@@ -9,13 +9,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "usuario")
-@Builder
+
 
 
 public class Usuario implements UserDetails { //implementa UserDatails para validar o usuário de acesso de login e senha.

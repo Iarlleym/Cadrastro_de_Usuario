@@ -5,11 +5,12 @@ import lombok.*;
 
 import java.util.List;
 
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+
 public class UsuarioDTO {
 
     private String nome;
