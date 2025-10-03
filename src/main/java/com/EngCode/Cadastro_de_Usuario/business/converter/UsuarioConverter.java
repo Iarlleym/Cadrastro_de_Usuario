@@ -32,6 +32,7 @@ public class UsuarioConverter {
                 .email(usuarioDTO.getEmail())             // pega email
                 .senha(usuarioDTO.getSenha())             // pega senha (ideal aplicar encoder)
                 .enderecos(paraListaEndereco(usuarioDTO.getEnderecos())) // converte lista de endereços
+                .telefones(paraListaTelefone(usuarioDTO.getTelefones())) // converte lista de tefones
                 // ⚠ Aqui você poderia também adicionar telefones se quiser
                 // .telefones(paraListaTelefone(usuarioDTO.getTelefones()))
                 .build();
