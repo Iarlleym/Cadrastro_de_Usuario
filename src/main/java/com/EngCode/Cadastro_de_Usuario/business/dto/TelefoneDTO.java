@@ -2,11 +2,12 @@ package com.EngCode.Cadastro_de_Usuario.business.dto;
 
 import lombok.*;
 
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+
 public class TelefoneDTO {
 
     private String numero;
