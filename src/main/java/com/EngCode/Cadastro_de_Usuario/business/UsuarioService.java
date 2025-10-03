@@ -4,6 +4,7 @@ import com.EngCode.Cadastro_de_Usuario.business.converter.UsuarioConverter;
 import com.EngCode.Cadastro_de_Usuario.business.dto.UsuarioDTO;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Usuario;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.ConflictException;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,6 +67,19 @@ public class UsuarioService {
     // Retorna true se existir, false se não existir.
     public boolean verificaEmailExistente(String email) {
         return usuarioRepository.existsByEmail(email);
+    }
+
+    //Cria o método de busca por e-mail
+    public Usuario buscarUsuarioPorEmail (String email) {
+        return usuarioRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("E-mail não encontrado." + email)); //Usa o orElseThrow para não usar um bloco try catch e usa a exception criada
+
+    }
+
+    //Cria método para deletar por email
+    public void deletaUsuarioPorEmail (String email) { //Usa Void pq não tem retorno.
+        usuarioRepository.deleteByEmail(email);
+
     }
 
 
