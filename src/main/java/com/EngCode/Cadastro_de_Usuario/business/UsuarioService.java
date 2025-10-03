@@ -6,6 +6,7 @@ import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Usuario;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.ConflictException;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.repository.UsuarioRepository;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     /**
      * Salva um novo usuário no banco de dados.
@@ -81,6 +83,32 @@ public class UsuarioService {
         usuarioRepository.deleteByEmail(email);
 
     }
+
+    public UsuarioDTO atualizaDaddosUsuario (String token, UsuarioDTO usuarioDTO) {
+
+        // Extrai o e-mail do usuário a partir do token JWT.
+        // Isso evita que seja necessário enviar o e-mail na requisição.
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+
+        // Caso o usuário tenha informado uma nova senha,
+        // ela é criptografada. Se não, permanece nula para ser tratada depois.
+        usuarioDTO.setSenha(usuarioDTO.getSenha() != null ? passwordEncoder.encode(usuarioDTO.getSenha()) : null);
+
+        // Busca o usuário no banco de dados pelo e-mail obtido do token.
+        // Se não encontrar, lança exceção personalizada de "não encontrado".
+        Usuario ususarioEntity = usuarioRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException ("E-mail não Localizado."));
+
+        // Faz a mesclagem dos dados:
+        // os novos dados vindos do DTO substituem os antigos,
+        // e os campos nulos mantêm os valores já salvos no banco.
+        Usuario usuario = usuarioConverter.updateDeUsuario(usuarioDTO, ususarioEntity);
+
+        // Salva o usuário atualizado no banco
+        // e retorna o objeto convertido para DTO novamente.
+        return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+    }
+
 
 
 }

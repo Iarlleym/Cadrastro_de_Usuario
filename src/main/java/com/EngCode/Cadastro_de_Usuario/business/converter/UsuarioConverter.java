@@ -141,5 +141,20 @@ public class UsuarioConverter {
                 .build();
     }
 
+    //Método para comparar os dados do usuario
+    public Usuario updateDeUsuario (UsuarioDTO usuarioDTO, Usuario usuario) {
+        // Cria um novo objeto Usuario com base nos dados recebidos.
+        // Se o campo do DTO for diferente de null, pega ele.
+        // Caso contrário, mantém o valor que já existia no banco.
+        return Usuario.builder()
+                .nome(usuarioDTO.getNome() != null ? usuarioDTO.getNome() : usuario.getNome())
+                .id(usuario.getId()) // O ID nunca muda, é fixo.
+                .senha(usuarioDTO.getSenha() != null ? usuarioDTO.getSenha() : usuario.getSenha())
+                .email(usuarioDTO.getEmail() != null ? usuarioDTO.getEmail() : usuario.getEmail())
+                .enderecos(usuario.getEnderecos()) // Mantém os endereços já cadastrados
+                .telefones(usuario.getTelefones()) // Mantém os telefones já cadastrados
+                .build();
+    }
+
 
 }

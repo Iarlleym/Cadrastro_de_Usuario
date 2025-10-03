@@ -48,5 +48,16 @@ public class UsuarioControler {
         return ResponseEntity.ok().build();
     }
 
+    //Método para atualizar dados do usuario já cadastrado.
+    @PutMapping
+    public ResponseEntity<UsuarioDTO> atualizaDadosUsuario (@RequestBody UsuarioDTO usuarioDTO, @RequestHeader ("Authorization") String token) {
+        // Recebe um objeto UsuarioDTO do corpo da requisição
+        // e o token do usuário no cabeçalho (Authorization).
+        // Em seguida, chama o service que vai tratar a atualização
+        // e retorna a resposta já no formato ResponseEntity.
+        return ResponseEntity.ok(usuarioService.atualizaDaddosUsuario(token,usuarioDTO));
+    }
+
+
 
 }
