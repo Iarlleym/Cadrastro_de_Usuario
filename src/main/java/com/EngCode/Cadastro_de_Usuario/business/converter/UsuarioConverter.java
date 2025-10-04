@@ -119,6 +119,7 @@ public class UsuarioConverter {
     /** Converte Endereco (Entity) em EnderecoDTO. */
     public EnderecoDTO paraEnderecoDTO(Endereco endereco) {
         return EnderecoDTO.builder()
+                .id(endereco.getId())
                 .rua(endereco.getRua())
                 .numero(endereco.getNumero())
                 .cidade(endereco.getCidade())
@@ -136,10 +137,50 @@ public class UsuarioConverter {
     /** Converte Telefone (Entity) em TelefoneDTO. */
     public TelefoneDTO paraTelefoneDTO(Telefone telefone) {
         return TelefoneDTO.builder()
+                .id(telefone.getId())
                 .numero(telefone.getNumero())
                 .ddd(telefone.getDdd())
                 .build();
     }
+
+    //Método para comparar os dados do usuario
+    public Usuario updateDeUsuario (UsuarioDTO usuarioDTO, Usuario usuario) {
+        // Cria um novo objeto Usuario com base nos dados recebidos.
+        // Se o campo do DTO for diferente de null, pega ele.
+        // Caso contrário, mantém o valor que já existia no banco.
+        return Usuario.builder()
+                .nome(usuarioDTO.getNome() != null ? usuarioDTO.getNome() : usuario.getNome())
+                .id(usuario.getId()) // O ID nunca muda, é fixo.
+                .senha(usuarioDTO.getSenha() != null ? usuarioDTO.getSenha() : usuario.getSenha())
+                .email(usuarioDTO.getEmail() != null ? usuarioDTO.getEmail() : usuario.getEmail())
+                .enderecos(usuario.getEnderecos()) // Mantém os endereços já cadastrados
+                .telefones(usuario.getTelefones()) // Mantém os telefones já cadastrados
+                .build();
+    }
+
+    // Atualiza os dados de um endereço existente, substituindo apenas os campos enviados no DTO e mantendo os valores anteriores nos campos nulos.
+    public Endereco updateEndereco(EnderecoDTO enderecoDTO, Endereco endereco) {
+        return Endereco.builder()
+                .id(endereco.getId())
+                .rua(enderecoDTO.getRua() != null ? enderecoDTO.getRua() : endereco.getRua())
+                .estado(enderecoDTO.getEstado() != null ? enderecoDTO.getEstado() : endereco.getEstado())
+                .numero(enderecoDTO.getNumero() != null ? enderecoDTO.getNumero() : endereco.getNumero())
+                .cep(enderecoDTO.getCep() != null ? enderecoDTO.getCep() : endereco.getCep())
+                .complemento(enderecoDTO.getComplemento() != null ? enderecoDTO.getComplemento() : endereco.getComplemento())
+                .cidade(enderecoDTO.getCidade() != null ? enderecoDTO.getCidade() : endereco.getCidade())
+                .build();
+    }
+
+    // Método responsável por comparar os dados recebidos no DTO com os dados já salvos no banco.
+    // Caso algum campo venha nulo, ele mantém o valor anterior do telefone, evitando sobrescrever com null.
+    public Telefone updateTelefone(TelefoneDTO telefoneDTO, Telefone telefone) {
+        return Telefone.builder()
+                .id(telefone.getId())
+                .ddd(telefoneDTO.getDdd() != null ? telefoneDTO.getDdd() : telefone.getDdd())
+                .numero(telefoneDTO.getNumero() != null ? telefoneDTO.getNumero() : telefone.getNumero())
+                .build();
+    }
+
 
 
 }
