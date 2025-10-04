@@ -51,7 +51,9 @@ public class UsuarioControler {
 
     //Método para atualizar dados do usuario já cadastrado.
     @PutMapping
-    public ResponseEntity<UsuarioDTO> atualizaDadosUsuario(@RequestBody UsuarioDTO usuarioDTO, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<UsuarioDTO> atualizaDadosUsuario(
+            @RequestBody UsuarioDTO usuarioDTO,
+            @RequestHeader("Authorization") String token) {
         // Recebe um objeto UsuarioDTO do corpo da requisição
         // e o token do usuário no cabeçalho (Authorization).
         // Em seguida, chama o service que vai tratar a atualização
@@ -84,6 +86,27 @@ public class UsuarioControler {
 
         // Chama o método da camada de serviço que realiza a atualização no banco de dados
         return ResponseEntity.ok(usuarioService.atualizaTelefones(id, telefoneDTO));
+    }
+
+    // Este método recebe os dados de um endereço enviados pelo cliente e associa esse endereço ao usuário
+// autenticado através do token JWT informado no cabeçalho da requisição.
+    @PostMapping("/endereco")
+    public ResponseEntity<EnderecoDTO> cadastraEndereco(
+            @RequestBody EnderecoDTO enderecoDTO, // Recebe os dados do endereço no corpo da requisição (JSON)
+            @RequestHeader("Authorization") String token) { // Captura o token JWT do cabeçalho da requisição
+        // Chama o método do serviço que realiza o cadastro do endereço vinculado ao usuário autenticado
+        return ResponseEntity.ok(usuarioService.cadastraEndereco(token, enderecoDTO));
+    }
+
+
+    // Este método faz o mesmo processo, mas para o cadastro de telefone.
+// Ele associa o número de telefone enviado ao usuário identificado pelo token JWT.
+    @PostMapping("/telefone")
+    public ResponseEntity<TelefoneDTO> cadastraTelefone(
+            @RequestBody TelefoneDTO telefoneDTO, // Recebe os dados do telefone no corpo da requisição (JSON)
+            @RequestHeader("Authorization") String token) { // Captura o token JWT do cabeçalho da requisição
+        // Chama o serviço responsável por salvar o telefone do usuário no banco de dados
+        return ResponseEntity.ok(usuarioService.cadastraTelefone(token, telefoneDTO));
     }
 
 

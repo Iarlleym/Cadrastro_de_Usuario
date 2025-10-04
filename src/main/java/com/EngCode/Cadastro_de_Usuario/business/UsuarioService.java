@@ -152,6 +152,64 @@ public class UsuarioService {
         return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(telefone));
     }
 
+    /**
+     * Cadastra um novo endereço para o usuário autenticado.
+     *
+     * Esse método recebe o token JWT, extrai o e-mail do usuário logado
+     * e busca seus dados no banco. Em seguida, converte o objeto EnderecoDTO
+     * (enviado pela requisição) para uma entidade Endereco já associada ao
+     * ID do usuário encontrado. Depois disso, salva o endereço no banco
+     * e retorna o mesmo convertido de volta para DTO.
+     */
+    public EnderecoDTO cadastraEndereco (String token, EnderecoDTO enderecoDTO) {
+
+        // Extrai o e-mail do usuário a partir do token JWT
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+
+        // Busca o usuário no banco de dados usando o e-mail obtido
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("E-mail não encontrado: " + email));
+
+        // Converte o DTO recebido para uma entidade Endereco,
+        // associando ao ID do usuário encontrado
+        Endereco endereco = usuarioConverter.paraEnderecoEntity(enderecoDTO, usuario.getId());
+
+        // Salva o endereço convertido no banco de dados
+        Endereco enderecoEntity = enderecoRepository.save(endereco);
+
+        // Converte a entidade salva novamente para DTO e retorna
+        return usuarioConverter.paraEnderecoDTO(enderecoEntity);
+    }
+
+    /**
+     * Cadastra um novo telefone para o usuário autenticado.
+     *
+     * Esse método recebe o token JWT, extrai o e-mail do usuário logado
+     * e busca seus dados no banco. Depois, converte o TelefoneDTO recebido
+     * da requisição em uma entidade Telefone já associada ao ID do usuário.
+     * Em seguida, o telefone é salvo no banco e retornado convertido para DTO.
+     */
+    public TelefoneDTO cadastraTelefone (String token, TelefoneDTO telefoneDTO) {
+
+        // Extrai o e-mail do usuário logado a partir do token JWT
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+
+        // Busca o usuário correspondente no banco de dados
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("E-mail não encontrado: " + email));
+
+        // Converte o DTO em entidade Telefone, vinculando ao ID do usuário
+        Telefone telefone = usuarioConverter.paraTelefoneEntity(telefoneDTO, usuario.getId());
+
+        // Salva o telefone convertido no banco
+        Telefone telefoneEntity = telefoneRepository.save(telefone);
+
+        // Converte a entidade salva de volta para DTO e retorna
+        return usuarioConverter.paraTelefoneDTO(telefoneEntity);
+    }
+
+
+
 
 
 }
