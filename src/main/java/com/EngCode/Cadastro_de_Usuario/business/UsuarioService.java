@@ -1,10 +1,16 @@
 package com.EngCode.Cadastro_de_Usuario.business;
 
 import com.EngCode.Cadastro_de_Usuario.business.converter.UsuarioConverter;
+import com.EngCode.Cadastro_de_Usuario.business.dto.EnderecoDTO;
+import com.EngCode.Cadastro_de_Usuario.business.dto.TelefoneDTO;
 import com.EngCode.Cadastro_de_Usuario.business.dto.UsuarioDTO;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Endereco;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Telefone;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Usuario;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.ConflictException;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.ResourceNotFoundException;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.repository.EnderecoRepository;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.repository.TelefoneRepository;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.repository.UsuarioRepository;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +26,8 @@ public class UsuarioService {
     private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EnderecoRepository enderecoRepository;
+    private final TelefoneRepository telefoneRepository;
 
     /**
      * Salva um novo usuário no banco de dados.
@@ -72,10 +80,14 @@ public class UsuarioService {
     }
 
     //Cria o método de busca por e-mail
-    public Usuario buscarUsuarioPorEmail (String email) {
-        return usuarioRepository.findByEmail(email).orElseThrow(
-                () -> new ResourceNotFoundException("E-mail não encontrado." + email)); //Usa o orElseThrow para não usar um bloco try catch e usa a exception criada
+    public UsuarioDTO buscarUsuarioPorEmail (String email) {
+        try {
+            return usuarioConverter.paraUsuarioDTO(usuarioRepository.findByEmail(email).orElseThrow(
+                    () -> new ResourceNotFoundException("E-mail não encontrado: " + email))); //Usa o orElseThrow para não usar um bloco try catch e usa a exception criada
 
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("E-mail não encontrado:" + email);
+        }
     }
 
     //Cria método para deletar por email
@@ -107,6 +119,37 @@ public class UsuarioService {
         // Salva o usuário atualizado no banco
         // e retorna o objeto convertido para DTO novamente.
         return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+    }
+
+
+    public EnderecoDTO atualizaEndereco(Long idEndereco, EnderecoDTO enderecoDTO) {
+
+        // Busca o endereço no banco de dados usando o ID informado.
+        // Caso não exista, lança uma exceção informando que o ID não foi encontrado.
+        Endereco enderecoEntity = enderecoRepository.findById(idEndereco).orElseThrow(() ->
+                new ResourceNotFoundException("Id não encontrado: " + idEndereco));
+
+        // Atualiza os dados do endereço existente com os novos valores
+        // recebidos do DTO, apenas substituindo os campos que vieram preenchidos.
+        Endereco endereco = usuarioConverter.updateEndereco(enderecoDTO, enderecoEntity);
+
+        // Salva o endereço atualizado no banco de dados e converte o resultado
+        // novamente para DTO antes de retornar a resposta.
+        return usuarioConverter.paraEnderecoDTO(enderecoRepository.save(endereco));
+    }
+
+    // Método responsável por atualizar as informações de um telefone já cadastrado.
+    // Primeiro ele busca o telefone pelo ID informado.
+    // Se o telefone não existir, lança uma exceção informando que o ID não foi encontrado.
+    // Caso exista, o método chama o 'updateTelefone' para mesclar os dados novos com os antigos.
+    // Em seguida, salva o telefone atualizado no banco e retorna os dados convertidos em DTO.
+    public TelefoneDTO atualizaTelefones(Long idTelefone, TelefoneDTO telefoneDTO) {
+        Telefone telefoneEntity = telefoneRepository.findById(idTelefone).orElseThrow(() ->
+                new ResourceNotFoundException("Id não encontrado:" + idTelefone));
+
+        Telefone telefone = usuarioConverter.updateTelefone(telefoneDTO, telefoneEntity);
+
+        return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(telefone));
     }
 
 

@@ -16,11 +16,11 @@ public class Endereco {
 
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
     @Column(name = "rua")
     private String rua;
     @Column (name = "numero")
-    private long numero;
+    private Long numero;
     @Column (name = "complemento", length = 30)
     private String complemento;
     @Column (name = "cidade", length = 150)
