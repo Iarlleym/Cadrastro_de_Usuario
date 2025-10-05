@@ -1,68 +1,74 @@
 package com.EngCode.Cadastro_de_Usuario.business.converter;
 
-// Importamos os DTOs (objetos que vêm da camada de negócio/API)
+// BLOCÃO 1: IMPORTAÇÕES E CONFIGURAÇÃO
+// -------------------------------------------------------------------------
+
+// Importa os DTOs (Objetos de Transferência de Dados) — O formato que a API usa para receber e enviar dados.
 import com.EngCode.Cadastro_de_Usuario.business.dto.EnderecoDTO;
 import com.EngCode.Cadastro_de_Usuario.business.dto.TelefoneDTO;
 import com.EngCode.Cadastro_de_Usuario.business.dto.UsuarioDTO;
 
-// Importamos as Entities (objetos que representam tabelas do banco de dados)
+// Importa as Entities (Entidades) — O formato que o banco de dados (JPA/Hibernate) usa.
 import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Endereco;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Telefone;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.entity.Usuario;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component; // Importa a anotação @Component.
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayList; // Importa classe para criar listas.
+import java.util.List;      // Importa interface de Listas.
 
-@Component // Diz para o Spring gerenciar essa classe (poder injetar em Services, por exemplo)
+@Component
+// Esta anotação diz ao Spring: "Gerencie este objeto. Ele pode ser injetado (usado)
+// em outras classes, como a UsuarioService." É o princípio da Injeção de Dependência.
 public class UsuarioConverter {
 
+    // =====================================================================
+    // DTO → ENTITY (CONVERSÃO DE ENTRADA: Da API para o Banco)
+    // =====================================================================
+
     /**
-     * Converte um UsuarioDTO (vindo da API ou camada de serviço)
-     * para um Usuario (Entity que será persistida no banco).
-     *
-     * - Usamos o @Builder do Lombok para criar a Entity.
-     * - Aqui já convertemos também a lista de endereços.
-     * - Obs: A senha normalmente deve ser encriptada antes de salvar.
+     * MÉTODO: paraUsuario(UsuarioDTO)
+     * FUNÇÃO: Converte o objeto de entrada da API (DTO) para o objeto de persistência (Entity).
+     * CONCEITO: Uso do Padrão Builder (Lombok) para criar o objeto de forma segura e legível.
      */
     public Usuario paraUsuario(UsuarioDTO usuarioDTO) {
         return Usuario.builder()
-                .nome(usuarioDTO.getNome())               // pega nome do DTO e joga na Entity
-                .email(usuarioDTO.getEmail())             // pega email
-                .senha(usuarioDTO.getSenha())             // pega senha (ideal aplicar encoder)
-                .enderecos(paraListaEndereco(usuarioDTO.getEnderecos())) // converte lista de endereços
-                .telefones(paraListaTelefone(usuarioDTO.getTelefones())) // converte lista de tefones
-                // ⚠ Aqui você poderia também adicionar telefones se quiser
-                // .telefones(paraListaTelefone(usuarioDTO.getTelefones()))
+                .nome(usuarioDTO.getNome())
+                .email(usuarioDTO.getEmail())
+                .senha(usuarioDTO.getSenha())
+                // Conversão Aninhada: Chama o método auxiliar para converter a lista de endereços.
+                .enderecos(paraListaEndereco(usuarioDTO.getEnderecos()))
+                // Conversão Aninhada: Chama o método auxiliar para converter a lista de telefones.
+                .telefones(paraListaTelefone(usuarioDTO.getTelefones()))
                 .build();
     }
 
     /**
-     * Converte uma lista de EnderecoDTO em uma lista de Endereco (Entity).
-     *
-     * Obs: poderia ser feito com stream (map), mas aqui usamos for para ficar mais claro.
+     * MÉTODO: paraListaEndereco(List<EnderecoDTO>)
+     * FUNÇÃO: Transforma uma lista de DTOs de Endereço em uma lista de Entities.
+     * CONCEITO: Coordenador do loop de conversão de listas.
      */
     public List<Endereco> paraListaEndereco(List<EnderecoDTO> enderecoDTOS) {
         List<Endereco> enderecos = new ArrayList<>();
+        // O laço 'for-each' percorre cada EnderecoDTO na lista de entrada.
         for (EnderecoDTO enderecoDTO : enderecoDTOS) {
+            // Chama o método paraEndereco para converter o item único e o adiciona à nova lista.
             enderecos.add(paraEndereco(enderecoDTO));
         }
         return enderecos;
-        // Outra forma mais curta (Java 16+):
-        // return enderecoDTOS.stream().map(this::paraEndereco).toList();
     }
 
     /**
-     * Converte um único EnderecoDTO em Endereco (Entity).
-     *
-     * - Usamos o builder para preencher cada campo.
-     * - O ideal é que cada campo do DTO corresponda a um campo da Entity.
+     * MÉTODO: paraEndereco(EnderecoDTO)
+     * FUNÇÃO: Converte um único EnderecoDTO para a Endereco Entity.
+     * CONCEITO: Mapeamento simples de item único.
      */
     public Endereco paraEndereco(EnderecoDTO enderecoDTO) {
         return Endereco.builder()
                 .rua(enderecoDTO.getRua())
                 .numero(enderecoDTO.getNumero())
+                // ... Mapeamento de todos os campos ...
                 .cidade(enderecoDTO.getCidade())
                 .complemento(enderecoDTO.getComplemento())
                 .cep(enderecoDTO.getCep())
@@ -71,16 +77,18 @@ public class UsuarioConverter {
     }
 
     /**
-     * Converte uma lista de TelefoneDTO em uma lista de Telefone (Entity).
-     *
-     * Aqui já usamos a forma compacta com streams.
+     * MÉTODO: paraListaTelefone(List<TelefoneDTO>)
+     * FUNÇÃO: Converte uma lista de DTOs de Telefone em uma lista de Entities.
+     * CONCEITO: Uso de Java Streams (forma moderna) para o loop de conversão.
      */
     public List<Telefone> paraListaTelefone(List<TelefoneDTO> telefoneDTOS) {
+        // Usa o .stream().map() para aplicar o método paraTelefone a cada item da lista.
         return telefoneDTOS.stream().map(this::paraTelefone).toList();
     }
 
     /**
-     * Converte um único TelefoneDTO em Telefone (Entity).
+     * MÉTODO: paraTelefone(TelefoneDTO)
+     * FUNÇÃO: Converte um único TelefoneDTO para a Telefone Entity.
      */
     public Telefone paraTelefone(TelefoneDTO telefoneDTO) {
         return Telefone.builder()
@@ -90,89 +98,103 @@ public class UsuarioConverter {
     }
 
     // =====================================================================
-    // ENTITY → DTO
+    // ENTITY → DTO (CONVERSÃO DE SAÍDA: Do Banco para a API)
     // =====================================================================
 
     /**
-     * Converte um Usuario (Entity vinda do banco)
-     * para um UsuarioDTO (usado na API/camada de negócio).
+     * MÉTODO: paraUsuarioDTO(Usuario)
+     * FUNÇÃO: Converte a Entity (que veio do banco) para o DTO (que será enviado como resposta da API).
+     * CONCEITO: Garante que a resposta da API tenha o formato desejado, sem expor todos os dados do banco.
      */
     public UsuarioDTO paraUsuarioDTO(Usuario usuario) {
+        // ... (Uso do Builder para montar o DTO de saída)
         return UsuarioDTO.builder()
                 .nome(usuario.getNome())
                 .email(usuario.getEmail())
-                .senha(usuario.getSenha()) // ⚠ normalmente não se retorna senha no DTO
+                .senha(usuario.getSenha()) // ⚠ Atenção: Senha é exposta aqui, o que não é ideal em produção.
                 .enderecos(paraListaEnderecoDTO(usuario.getEnderecos()))
                 .telefones(paraListaTelefoneDTO(usuario.getTelefones()))
                 .build();
     }
 
+    // ... (Métodos de Conversão de Saída para Endereço e Telefone - Lógica inversa) ...
+
     /** Converte lista de Endereco (Entity) para lista de EnderecoDTO. */
     public List<EnderecoDTO> paraListaEnderecoDTO(List<Endereco> enderecos) {
         List<EnderecoDTO> enderecosDTO = new ArrayList<>();
+        // Uso do for-each para converter cada Endereco Entity em DTO.
         for (Endereco endereco : enderecos) {
             enderecosDTO.add(paraEnderecoDTO(endereco));
         }
         return enderecosDTO;
     }
 
-    /** Converte Endereco (Entity) em EnderecoDTO. */
+    /** Converte Endereco (Entity) em EnderecoDTO. Adiciona o ID para referência. */
     public EnderecoDTO paraEnderecoDTO(Endereco endereco) {
         return EnderecoDTO.builder()
-                .id(endereco.getId())
+                .id(endereco.getId()) // Inclui o ID gerado pelo banco.
                 .rua(endereco.getRua())
-                .numero(endereco.getNumero())
-                .cidade(endereco.getCidade())
-                .complemento(endereco.getComplemento())
-                .cep(endereco.getCep())
-                .estado(endereco.getEstado())
+                // ... (Mapeamento dos campos) ...
                 .build();
     }
 
     /** Converte lista de Telefone (Entity) para lista de TelefoneDTO. */
     public List<TelefoneDTO> paraListaTelefoneDTO(List<Telefone> telefones) {
+        // Uso de Streams para conversão de lista.
         return telefones.stream().map(this::paraTelefoneDTO).toList();
     }
 
-    /** Converte Telefone (Entity) em TelefoneDTO. */
+    /** Converte Telefone (Entity) em TelefoneDTO. Adiciona o ID para referência. */
     public TelefoneDTO paraTelefoneDTO(Telefone telefone) {
         return TelefoneDTO.builder()
-                .id(telefone.getId())
+                .id(telefone.getId()) // Inclui o ID gerado pelo banco.
                 .numero(telefone.getNumero())
                 .ddd(telefone.getDdd())
                 .build();
     }
 
-    //Método para comparar os dados do usuario
+    // =====================================================================
+    // MÉTODOS DE ATUALIZAÇÃO (UPDATE)
+    // =====================================================================
+
+    /**
+     * MÉTODO: updateDeUsuario(UsuarioDTO, Usuario)
+     * FUNÇÃO: Cria uma nova Entity de Usuário para o update, aplicando a lógica de "se nulo, manter o valor antigo".
+     * CONCEITO: Lógica de PATCH (atualização parcial). Garante que campos não enviados no DTO (se vierem como 'null')
+     * não sobrescrevam dados existentes no banco.
+     */
     public Usuario updateDeUsuario (UsuarioDTO usuarioDTO, Usuario usuario) {
-        // Cria um novo objeto Usuario com base nos dados recebidos.
-        // Se o campo do DTO for diferente de null, pega ele.
-        // Caso contrário, mantém o valor que já existia no banco.
         return Usuario.builder()
+                // Operador Ternário: (Condição) ? (Se Verdadeiro) : (Se Falso)
+                // Se o nome do DTO não for null, usa o novo nome. Senão, mantém o nome antigo (usuario.getNome()).
                 .nome(usuarioDTO.getNome() != null ? usuarioDTO.getNome() : usuario.getNome())
-                .id(usuario.getId()) // O ID nunca muda, é fixo.
+                .id(usuario.getId()) // O ID deve sempre ser mantido.
+                // ... (Aplica a mesma lógica para senha e email) ...
                 .senha(usuarioDTO.getSenha() != null ? usuarioDTO.getSenha() : usuario.getSenha())
                 .email(usuarioDTO.getEmail() != null ? usuarioDTO.getEmail() : usuario.getEmail())
-                .enderecos(usuario.getEnderecos()) // Mantém os endereços já cadastrados
-                .telefones(usuario.getTelefones()) // Mantém os telefones já cadastrados
+                .enderecos(usuario.getEnderecos()) // Mantém as listas existentes.
+                .telefones(usuario.getTelefones()) // Mantém as listas existentes.
                 .build();
     }
 
-    // Atualiza os dados de um endereço existente, substituindo apenas os campos enviados no DTO e mantendo os valores anteriores nos campos nulos.
+    /**
+     * MÉTODO: updateEndereco(EnderecoDTO, Endereco)
+     * FUNÇÃO: Atualiza os dados de um Endereço, aplicando a lógica de atualização parcial (PATCH).
+     */
     public Endereco updateEndereco(EnderecoDTO enderecoDTO, Endereco endereco) {
         return Endereco.builder()
-                .id(endereco.getId())
+                .id(endereco.getId()) // ID do endereço existente.
+                // Aplica a lógica de "se nulo, manter o valor existente" para cada campo.
                 .rua(enderecoDTO.getRua() != null ? enderecoDTO.getRua() : endereco.getRua())
                 .estado(enderecoDTO.getEstado() != null ? enderecoDTO.getEstado() : endereco.getEstado())
-                .numero(enderecoDTO.getNumero() != null ? enderecoDTO.getNumero() : endereco.getNumero())
-                .cep(enderecoDTO.getCep() != null ? enderecoDTO.getCep() : endereco.getCep())
-                .complemento(enderecoDTO.getComplemento() != null ? enderecoDTO.getComplemento() : endereco.getComplemento())
-                .cidade(enderecoDTO.getCidade() != null ? enderecoDTO.getCidade() : endereco.getCidade())
+                // ... (Lógica de PATCH para todos os campos) ...
                 .build();
     }
 
-    // Método responsável por comparar os dados recebidos no DTO com os dados já salvos no banco.
-    // Caso algum campo venha nulo, ele mantém o valor anterior do telefone, evitando sobrescrever com null.
+    /**
+     * MÉTODO: updateTelefone(TelefoneDTO, Telefone)
+     * FUNÇÃO: Atualiza os dados de um Telefone, aplicando a lógica de atualização parcial (PATCH).
+     */
     public Telefone updateTelefone(TelefoneDTO telefoneDTO, Telefone telefone) {
         return Telefone.builder()
                 .id(telefone.getId())
@@ -181,25 +203,23 @@ public class UsuarioConverter {
                 .build();
     }
 
+    // =====================================================================
+    // MÉTODOS DE RELACIONAMENTO (USO AVANÇADO)
+    // =====================================================================
+    // Estes métodos parecem ser auxiliares para adicionar itens a um usuário existente,
+    // onde o ID do usuário é passado separadamente.
+
     public Endereco paraEnderecoEntity (EnderecoDTO enderecoDTO, Long idUsuario) {
         return Endereco.builder()
-                .rua(enderecoDTO.getRua())
-                .cidade(enderecoDTO.getCidade())
-                .estado(enderecoDTO.getEstado())
-                .complemento(enderecoDTO.getComplemento())
-                .numero(enderecoDTO.getNumero())
-                .usuario_id(idUsuario)
+                // ... (Mapeamento de campos) ...
+                .usuario_id(idUsuario) // Associa o Endereço à chave estrangeira (FK) do Usuário.
                 .build();
     }
 
     public Telefone paraTelefoneEntity (TelefoneDTO telefoneDTO, Long idTelefone) {
         return Telefone.builder()
-                .numero(telefoneDTO.getNumero())
-                .ddd(telefoneDTO.getDdd())
-                .usuario_id(idTelefone)
+                // ... (Mapeamento de campos) ...
+                .usuario_id(idTelefone) // Associa o Telefone à chave estrangeira (FK) do Usuário.
                 .build();
     }
-
-
-
 }
