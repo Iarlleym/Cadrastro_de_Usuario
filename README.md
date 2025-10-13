@@ -8,10 +8,7 @@ Este microserviço é responsável pelo **gerenciamento de usuários**, incluind
 <div style="display: inline_block"><br>
   <img align="center" alt="Java" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-plain.svg">
   <img align="center" alt="Spring Boot" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/spring/spring-original.svg">
-  <img align="center" alt="MongoDB" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-plain.svg">
-  <img align="center" alt="JWT" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/jsonwebtokens/jsonwebtokens-plain.svg">
-  <img align="center" alt="MapStruct" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-plain.svg">
-  <img align="center" alt="Lombok" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-plain.svg">
+  <img align="center" alt="PostgreSQL" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-plain.svg">
 </div>
 
 ---
@@ -31,7 +28,7 @@ Este microserviço é responsável pelo **gerenciamento de usuários**, incluind
 - `infrastructure/entity`: Entidades que representam o banco  
 - `infrastructure/repository`: Repositórios Spring Data  
 - `infrastructure/security`: Configuração de segurança e JWT  
-- `business/mapper`: Conversores DTO ↔ Entity  
+- `business/converter`: Conversores DTO ↔ Entity utilizando `.builder()`  
 
 ---
 
