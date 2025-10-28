@@ -38,9 +38,9 @@ public class UsuarioConverter {
                 .email(usuarioDTO.getEmail())
                 .senha(usuarioDTO.getSenha())
                 // Conversão Aninhada: Chama o método auxiliar para converter a lista de endereços.
-                .enderecos(paraListaEndereco(usuarioDTO.getEnderecos()))
+                .enderecos(usuarioDTO.getEnderecos() != null ? paraListaEndereco(usuarioDTO.getEnderecos()) : null)
                 // Conversão Aninhada: Chama o método auxiliar para converter a lista de telefones.
-                .telefones(paraListaTelefone(usuarioDTO.getTelefones()))
+                .telefones(usuarioDTO.getTelefones() != null ? paraListaTelefone(usuarioDTO.getTelefones()) : null)
                 .build();
     }
 
@@ -112,8 +112,8 @@ public class UsuarioConverter {
                 .nome(usuario.getNome())
                 .email(usuario.getEmail())
                 .senha(usuario.getSenha()) // ⚠ Atenção: Senha é exposta aqui, o que não é ideal em produção.
-                .enderecos(paraListaEnderecoDTO(usuario.getEnderecos()))
-                .telefones(paraListaTelefoneDTO(usuario.getTelefones()))
+                .enderecos(usuario.getEnderecos() != null ?  paraListaEnderecoDTO(usuario.getEnderecos()) : null)
+                .telefones(usuario.getTelefones() != null ? paraListaTelefoneDTO(usuario.getTelefones()) : null)
                 .build();
     }
 
