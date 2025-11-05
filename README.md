@@ -98,6 +98,6 @@ viacep.url=[https://viacep.com.br/](https://viacep.com.br/)
 
 Após iniciar o serviço, você pode acessar a documentação interativa da API (OpenAPI/Swagger UI) no seu navegador:
 
-[http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
+[http://localhost:8080/swagger-ui.html](http://localhost:8081/swagger-ui.html)
 
-**(Nota: Assumindo que o serviço está rodando na porta 8081, ou a porta que você configurou.)**
+**(Nota: Assumindo que o serviço está rodando na porta 8080, ou a porta que você configurou.)**
