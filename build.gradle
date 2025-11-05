@@ -24,6 +24,14 @@ repositories {
 	mavenCentral()
 }
 
+// ========================
+// 🔹 Variáveis extras
+// ========================
+ext {
+    set('springCloudVersion', "2025.0.0") // Versão do Spring Cloud utilizada
+}
+
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -32,6 +40,13 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    // Core: Dependência do Feign Client, essencial para comunicação entre microsserviços
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // === CORREÇÃO CRÍTICA PARA O ERRO PATCH ===
+    // Adiciona o cliente Apache HTTP, que suporta o método PATCH, resolvendo a ProtocolException do Feign.
+    implementation 'io.github.openfeign:feign-hc5:13.6'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'
@@ -48,6 +63,17 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
+
+// ========================
+// 🔹 Gerenciamento de dependências do Spring Cloud
+// ========================
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
 
 tasks.named('test') {
 	useJUnitPlatform()
