@@ -5,6 +5,7 @@ package com.EngCode.Cadastro_de_Usuario.controller;
 
 // Importa suas Exceções Personalizadas (ResourceNotFound, Conflict, Unauthorized).
 import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.ConflictException;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.IllegalArgumentException; // Sua nova exceção de validação
 import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.exceptions.UnauthorizedException;
 
@@ -19,20 +20,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler; // Anotação q
 
 @ControllerAdvice
 // ANOTAÇÃO PRINCIPAL: Habilita esta classe a "ouvir" e interceptar exceções
-// lançadas em QUALQUER @Controller da sua aplicação. Isso garante o tratamento de erros GLOBAL.
+// lançadas em QUALQUER @Controller da sua aplicação. Garante o tratamento de erros GLOBAL.
 public class GlobalExceptionHandler {
 
     // BLOCÃO 3: TRATAMENTO DE ResourceNotFoundException (HTTP 404 - Não Encontrado)
     // -------------------------------------------------------------------------
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    // Mapeia: Diz ao Spring para executar este método sempre que uma ResourceNotFoundException for lançada (geralmente pelo Service).
+    // Mapeia: Executa este método sempre que uma ResourceNotFoundException for lançada.
     public ResponseEntity<String> handlerResourceNotFoundException(ResourceNotFoundException resourceNotFoundException) {
         // FUNÇÃO: Captura a exceção, pega a mensagem de erro que foi definida nela.
 
-        // Retorna um novo ResponseEntity:
-        // 1. Corpo: A mensagem de erro (resourceNotFoundException.getMessage()).
-        // 2. Status: HttpStatus.NOT_FOUND (Código 404).
+        // Retorna: Mensagem da exceção com o Status HTTP 404 (NOT_FOUND).
         return new ResponseEntity<>(resourceNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
     }
 
@@ -40,11 +39,11 @@ public class GlobalExceptionHandler {
     // -------------------------------------------------------------------------
 
     @ExceptionHandler(ConflictException.class)
-    // Mapeia: Diz ao Spring para executar este método quando uma ConflictException for lançada (ex: tentar cadastrar e-mail duplicado).
+    // Mapeia: Executa este método quando uma ConflictException for lançada (ex: e-mail duplicado).
     public ResponseEntity<String> handlerConflictException(ConflictException conflictException) {
         // FUNÇÃO: Captura a exceção de Conflito.
 
-        // Retorna: A mensagem da exceção com o Status HTTP 409 (CONFLICT).
+        // Retorna: Mensagem da exceção com o Status HTTP 409 (CONFLICT).
         return new ResponseEntity<>(conflictException.getMessage(), HttpStatus.CONFLICT);
     }
 
@@ -52,11 +51,23 @@ public class GlobalExceptionHandler {
     // -------------------------------------------------------------------------
 
     @ExceptionHandler(UnauthorizedException.class)
-    // Mapeia: Diz ao Spring para executar este método quando uma UnauthorizedException for lançada (geralmente relacionada a falha de JWT/permissão).
+    // Mapeia: Executa este método quando uma UnauthorizedException for lançada (falha de JWT/permissão).
     public ResponseEntity<String> handlerUnauthorizedException(UnauthorizedException unauthorizedException) {
         // FUNÇÃO: Captura a exceção de Não Autorizado.
 
-        // Retorna: A mensagem da exceção com o Status HTTP 401 (UNAUTHORIZED).
+        // Retorna: Mensagem da exceção com o Status HTTP 401 (UNAUTHORIZED).
         return new ResponseEntity<>(unauthorizedException.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    // BLOCÃO 6: TRATAMENTO DE IllegalArgumentException (HTTP 400 - Requisição Inválida)
+    // -------------------------------------------------------------------------
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    // Mapeia: Executa este método quando uma IllegalArgumentException for lançada (geralmente por falha em validações de entrada, como o CEP).
+    public ResponseEntity<String> handlerIllegalArgumentException (IllegalArgumentException illegalArgumentException) {
+        // FUNÇÃO: Captura a exceção de Argumento Inválido (validação de formato).
+
+        // Retorna: Mensagem da exceção com o Status HTTP 400 (BAD_REQUEST). Este é o código correto para falhas de validação de input.
+        return new ResponseEntity<> (illegalArgumentException.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
