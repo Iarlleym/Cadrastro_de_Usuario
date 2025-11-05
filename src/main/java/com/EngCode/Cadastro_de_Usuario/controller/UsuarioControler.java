@@ -4,9 +4,11 @@ package com.EngCode.Cadastro_de_Usuario.controller;
 // -------------------------------------------------------------------------
 
 import com.EngCode.Cadastro_de_Usuario.business.UsuarioService;
+import com.EngCode.Cadastro_de_Usuario.business.ViaCepService; // Importação do novo serviço ViaCEP
 import com.EngCode.Cadastro_de_Usuario.business.dto.EnderecoDTO;
 import com.EngCode.Cadastro_de_Usuario.business.dto.TelefoneDTO;
 import com.EngCode.Cadastro_de_Usuario.business.dto.UsuarioDTO;
+import com.EngCode.Cadastro_de_Usuario.infrastructure.clients.ViaCepDTO; // DTO de retorno da ViaCEP
 import com.EngCode.Cadastro_de_Usuario.infrastructure.security.JwtUtil;
 import com.EngCode.Cadastro_de_Usuario.infrastructure.security.SecurityConfig;
 
@@ -44,6 +46,7 @@ public class UsuarioControler {
     private final UsuarioService usuarioService; // Coordena a lógica de negócio.
     private final AuthenticationManager authenticationManager; // Gerencia o processo de Login/Senha.
     private final JwtUtil jwtUtil; // Ferramenta para gerar o Token JWT.
+    private final ViaCepService viaCepService; // Novo serviço injetado para a consulta de CEP.
 
     // BLOCÃO 3: ENDPOINTS DE CADASTRO E LOGIN (Públicos)
     // -------------------------------------------------------------------------
@@ -183,5 +186,22 @@ public class UsuarioControler {
         // Recebe o token JWT para identificar o proprietário do telefone.
 
         return ResponseEntity.ok(usuarioService.cadastraTelefone(token, telefoneDTO));
+    }
+
+    // BLOCÃO 7: ENDPOINT DE CONSUMO DE API EXTERNA (ViaCEP)
+    // -------------------------------------------------------------------------
+
+    @GetMapping ("/endereco/{cep}")
+    // SWAGGER: Documentação do endpoint de consulta ViaCEP.
+    @Operation(summary = "Consultar Endereço por CEP", description = "Busca e retorna dados de endereço utilizando a API ViaCEP. Não requer autenticação.")
+    @ApiResponse(responseCode = "200", description = "Endereço encontrado e retornado com sucesso.")
+    @ApiResponse(responseCode = "400", description = "CEP inválido (Formato incorreto ou caracteres ilegais).")
+    @ApiResponse(responseCode = "404", description = "CEP não encontrado na base de dados da ViaCEP.")
+    @ApiResponse(responseCode = "500", description = "Erro de Servidor (Falha na comunicação com a ViaCEP).")
+    public ResponseEntity <ViaCepDTO> buscarDadosDeCep (@PathVariable ("cep") String cep) {
+        // @PathVariable ("cep"): Pega a variável de caminho (o CEP) da URL.
+
+        // Chama o serviço ViaCEP para executar a validação e a chamada Feign.
+        return ResponseEntity.ok(viaCepService.buscarDadosDeEndereco(cep));
     }
 }
